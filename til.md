@@ -115,3 +115,67 @@
 9. 설정까지 마치면 public에 생성된 것을 한 번 비우고 다시 채우는 과정을 거쳐야 한다.
 9-1. 이때 사용하는 코드는 hexo clean && hexo generate
 10. 거의 마지막 부분으로 hexo deploy를 실행시키면 유저네임.github.io로도 접속이 가능해진다.
+
+
+
+
+
+## Friday
+
+1. Revert_Everything
+
+### Rename
+- 일반적인 Shell Command인 mv를 이용하면 파일명 자체가 바뀌긴 하나, git status로 확인 시 
+- 기존 파일이 삭제되고 새로운 파일이 생성된 방식으로 작동한 것을 알 수 있음
+- 이는 mv커맨드의 메커니즘적인 문제인 것 같은데, mv 커맨드를 통한 파일명 변경이 위의 방식대로 작동하였기 때문인 듯함.
+- 따라서 Git process에서의 rename 과정은 git mv {기존 파일명} {새 파일명}으로 커맨드를 작성해야함
+- 예를 들자면 잠깐 가족이 해외여행 간 사이에 내가 알리지 않고 성형을 했다면 가족이 돌아왔을 때 누군지 인지 못하기에
+- 가족에게 알리고 성형을 한다면 가족도 둘이 동일한 개체구나 할 것이기 때문임
+- 즉 rename과정에서 git에게 해당 process를 진행하면 되는 것
+- ++ 이 Process에서 따로 Onstaging이 일어나지 않는 것은 물리량의 변화가 없기 떄문
+
+### Undoing
+- git add 커맨드를 실행하기 전 과정임
+- 이 작업은 작업 디렉토리에서 최신 Commit으로 돌아가는 프로세스임
+- Git Process에서 어떤 파일을 잘못 생성하거나 수정 등의 작업을 했을 때 이를 실행 취소하는 프로세스임
+- 다시 말해, 커맨드인 Git restore {file}을 실행하면 현재 작업 중인 디렉토리 하에 있는 모든 변화량이 최신 commit으로 돌아가는 것
+
+### Unstaging 
+- 이전 Undoing이 git add 전 과정이었다면, Unstaging은 add후 stage에 올라갔을 때 그를 되돌리는 과정임
+- 위 상황에서 만약 git add 기능을 사용해 reverted.md를 스테이지에 올리고 난 후, err가 있는 것을 알았다면
+- git reset HEAD {file} 커맨드를 이용해 unstage 가능함
+- ++ 혹은 두 파일이 동시에 올라갔을 때 하나를 내리고 싶을 때도 위 커맨드를 사용하여 하나만 내리는 것도 가능
+- ++ 이를 방지하기 위해 작업단위를 잘 지키는 것이 중요
+- ++ 또한 이 모든 과정은 push가 일어나기 전이기 때문에 push가 일어나면 답이 없음
+- ++ 따라서 push는 웬만하면 중간 혹은 최종 결산 때 작동시킬 것
+
+### Reset&Revert
+-  Reset 기능이 존재하긴 하지만 대단히 위험한 기능임
+- Reset 기능은 강제적이고 강력한 기능이기 때문에 말 그대로 억지로 초기화 시키는 느낌이 가능하기 때문
+- 따라서 Reset 기능보다는 Revert 기능을 쓰는 게 좋은데, 사용하기 전 git lg로 commit 로그를 확인
+- 원하는 지점으로 되돌리기 위해 작성하는 커맨드는 
+> git revert --no-comiit HEAD~3..
+> 여기서 HEAD~3은 HEAD부터 3줄까지라는 의미이고 ..은 순차적으로라는 의미를 가짐
+> 이를 번역하면 헤드에서부터 3줄까지 순차적으로 되돌리는 커맨드를 의미
+
+
+2. Collaborate_with_teammate_using_fork,merge,pullrequest
+- (1) 팀장 : Organization을 만든다
+- (2) Issue Template을 생성
+- (3) Clone 후 git flow init 커맨드 실행
+- (4) 대상 파일 생성 후 origin develop으로 push
+- (5) 팀원 : develop 확인 후 fork
+- (6) 나의 repo 방문 전 내 할 일 issue 등록
+- (7) fork한 repo clone, git flow init
+- (8) git flow feature start {file}
+
+-----WORK------
+
+- (9) git flow feature finish {file}
+- (10) push to origin develop
+- (11) Open Pull Request
+- (12) 팀장 : code review 후 Approve/Comment/Change request
+- (13) 팀원 : 추가 작업 후 origin develop으로 push
+- (14) merge conflict가 있다면 조직의 develop local로 pull하여 conflict 해결 후 add, commit, push
+- (15) 팀장 : Merge pull request
+- 여기까지 마무리 되었으면 Release process에 들어감
